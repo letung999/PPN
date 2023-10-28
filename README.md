@@ -23,6 +23,15 @@
         <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/TerraformCD.png?raw=true">
     </picture>
 - Redis cache data.
+    * install and start Redis
+        * `npm install -g redis-commander`
+        * `redis-commander`
+        *  start command line and access `localhost` and you can see this through picture below:
+        <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/Redis.png?raw=true">
+                <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/Redis.png?raw=true">
+                <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/Redis.png?raw=true">
+        </picture>
 - Separate environments to testing.
   * qa
   * silo-5
