@@ -96,7 +96,53 @@
   
 ## Create RDS and Connect application with RDS.
 - Create RDS and configure username, password, rules [RDS](https://aws.amazon.com/getting-started/hands-on/create-mysql-db/).
-> **Notice** 
-> You have to set up inbound rules for your RDS
+> **Note** 
+> You have to set up inbound rules for your RDS and public accessible.
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/Rules_RDS.png?raw=true">
+        <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/Rules_RDS.png?raw=true">
+        <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/Rules_RDS.png?raw=true">
+    </picture>
+> after we created success as this below:
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/RDS.png?raw=true">
+        <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/RDS.png?raw=true">
+        <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/RDS.png?raw=true">
+    </picture>
+> We can monitoring status and workload database.
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/RDS_monitoring.png?raw=true">
+        <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/RDS_monitoring.png?raw=true">
+        <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/RDS_monitoring.png?raw=true">
+    </picture>
 
- 
+
+- Connect MySQL with RDS: go ahead AWS RDS and copy the endpoint and paste it into hostname at MySQL workbench.
+    <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/letung999/PPN/dev/images/RDS_local.png">
+          <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/letung999/PPN/dev/images/RDS_local.png">
+          <img alt="The follow of system" src="https://raw.githubusercontent.com/letung999/PPN/dev/images/RDS_local.png">
+    </picture>
+## Separate environment for parameter store in SSM
+
+- create `application-prod.properties`, `bootstrap-prod.properties` and then use `spring.profiles.active=name_enviroment`or you can set up in active environment in intellij IDEA
+- `application-prod.properties`
+    ```
+    spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+    spring.datasource.url=${url-db}
+    spring.datasource.username=${username}
+    spring.datasource.password=${password-db}
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.show-sql=true
+    spring.jpa.properties.hibernate.format_sql=false
+    spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL55Dialect
+    spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+    server.port=5000
+    ```
+- `bootstrap-prod.properties`
+    ```
+    aws.paramstore.prefix=/ppn
+    aws.paramstore.default-context=prod
+    aws.paramstore.profile-separator=
+    aws.paramstore.enabled=true
+    ```
