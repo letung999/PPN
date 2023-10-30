@@ -43,7 +43,7 @@
 
 # Steps by Steps to Implement.
 
-- Set up to connect application with SSM AWS and create parameter store.
+## Set up to connect application with SSM AWS and create parameter store.
     * Import dependencies
 > **Important**
 > attention to the Java version and Spring boot version, maybe when you import dependencies will occur error because of not integrated version.
@@ -92,4 +92,9 @@
     aws.paramstore.default-context=dev
     aws.paramstore.profile-separator=
     aws.paramstore.enabled=true
-    ```
+
+## Create RDS and Connect application with RDS.
+- Create RDS and configure username, password, rules [RDS](https://aws.amazon.com/getting-started/hands-on/create-mysql-db/).
+> **Notice** 
+> You have to set up inbound rules for your RDS
+
