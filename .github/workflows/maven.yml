@@ -1,4 +1,5 @@
-name: PPN
+
+name: ppn
 
 on:
   push:
