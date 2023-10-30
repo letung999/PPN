@@ -92,8 +92,7 @@
     aws.paramstore.default-context=dev
     aws.paramstore.profile-separator=
     aws.paramstore.enabled=true
-    ```
-  
+
 ## Create RDS and Connect application with RDS.
 - Create RDS and configure username, password, rules [RDS](https://aws.amazon.com/getting-started/hands-on/create-mysql-db/).
 > **Note** 
@@ -125,6 +124,7 @@
     </picture>
 ## Separate environment for parameter store in SSM
 
+
 - create `application-prod.properties`, `bootstrap-prod.properties` and then use `spring.profiles.active=name_enviroment`or you can set up in active environment in intellij IDEA
 - `application-prod.properties`
     ```
@@ -146,3 +146,4 @@
     aws.paramstore.profile-separator=
     aws.paramstore.enabled=true
     ```
+
