@@ -92,11 +92,9 @@
     aws.paramstore.default-context=dev
     aws.paramstore.profile-separator=
     aws.paramstore.enabled=true
-    ```
-  
+
 ## Create RDS and Connect application with RDS.
 - Create RDS and configure username, password, rules [RDS](https://aws.amazon.com/getting-started/hands-on/create-mysql-db/).
 > **Notice** 
 > You have to set up inbound rules for your RDS
 
- 
