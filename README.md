@@ -43,3 +43,60 @@
 
 # Steps by Steps to Implement.
 
+## Set up to connect application with SSM AWS and create parameter store.
+    * Import dependencies
+> **Important**
+> attention to the Java version and Spring boot version, maybe when you import dependencies will occur error because of not integrated version.
+  ``` java
+  <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-bootstrap</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-aws-parameter-store-config</artifactId>
+          <version>2.2.6.RELEASE</version>
+      </dependency>
+  ...
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>org.springframework.cloud</groupId>
+              <artifactId>spring-cloud-dependencies</artifactId>
+              <version>${spring-cloud.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
+  ```
+- Set up environment in intellij to connect AWS
+    * `edit configuration -> modify options -> Enviroment Variables`
+    <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/letung999/PPN/cbde070e36c6f8be4724dfd36c01c6d958e275e3/images/EnviromentIntellj_AWS.png">
+            <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/letung999/PPN/cbde070e36c6f8be4724dfd36c01c6d958e275e3/images/EnviromentIntellj_AWS.png">
+            <img alt="The follow of system" src="https://raw.githubusercontent.com/letung999/PPN/cbde070e36c6f8be4724dfd36c01c6d958e275e3/images/EnviromentIntellj_AWS.png">
+    </picture>
+- Create parameter store in SSM
+    * create parameter store [SSM](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-create-console.html)
+    <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/letung999/PPN/cbde070e36c6f8be4724dfd36c01c6d958e275e3/images/SSM.png">
+            <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/letung999/PPN/cbde070e36c6f8be4724dfd36c01c6d958e275e3/images/SSM.png">
+            <img alt="The follow of system" src="https://raw.githubusercontent.com/letung999/PPN/cbde070e36c6f8be4724dfd36c01c6d958e275e3/images/SSM.png">
+    </picture>
+    
+- Custom name of parameter store by creating: `bootstrap.properties`
+    ```
+    aws.paramstore.prefix=/ppn
+    aws.paramstore.default-context=dev
+    aws.paramstore.profile-separator=
+    aws.paramstore.enabled=true
+    ```
+  
+## Create RDS and Connect application with RDS.
+- Create RDS and configure username, password, rules [RDS](https://aws.amazon.com/getting-started/hands-on/create-mysql-db/).
+> **Notice** 
+> You have to set up inbound rules for your RDS
+
+ 
