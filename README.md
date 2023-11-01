@@ -87,7 +87,7 @@
     </picture>
     
 - Custom name of parameter store by creating: `bootstrap.properties`
-    ```
+    ``` properties
     aws.paramstore.prefix=/ppn
     aws.paramstore.default-context=dev
     aws.paramstore.profile-separator=
@@ -127,7 +127,7 @@
 
 - create `application-prod.properties`, `bootstrap-prod.properties` and then use `spring.profiles.active=name_enviroment`or you can set up in active environment in intellij IDEA
 - `application-prod.properties`
-    ```
+    ``` properties
     spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
     spring.datasource.url=${url-db}
     spring.datasource.username=${username}
@@ -140,10 +140,115 @@
     server.port=5000
     ```
 - `bootstrap-prod.properties`
-    ```
+    ``` properties
     aws.paramstore.prefix=/ppn
     aws.paramstore.default-context=prod
     aws.paramstore.profile-separator=
     aws.paramstore.enabled=true
     ```
 
+## Set up CI/CD to deploy application.
+
+* create `maven.yml` and in this file you'll config steps and connect to AWS:
+```yaml
+
+name: ppn
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Prepare S3 upload target
+        run: mkdir artifacts && cp target/*.jar artifacts/
+
+      - name: install aws cli
+        run: sudo apt-get update && sudo apt-get install -y awscli
+
+      - name: Set up aws credentials
+        run: |
+          mkdir -p ~/.aws
+          touch ~/.aws/credentials
+          echo "[default]
+          aws_access_key_id = ${AWS_ACCESS_KEY_ID}
+          aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" > ~/.aws/credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET}}
+
+      - name: Copy files to S3
+        run: aws s3 cp artifacts s3://${{ secrets.AWS_S3_BUCKET }}/${GITHUB_SHA::7}/ --recursive --region us-east-1
+
+      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+
+```
+* create `terraform.yml` to manage AWS, it will demonstrate through three steps:
+  * `terraform init`
+  * `terraform plan`
+  * `terraform apply`
+
+```yaml
+name: 'Deploy PPN with Terraform'
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy_terraform:
+    name: Deploy with terraform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v1
+      - name: Set up AWS credentials
+        run: |
+          mkdir -p ~/.aws
+          touch ~/.aws/credentials
+          echo "[default]
+          aws_access_key_id = ${AWS_ACCESS_KEY_ID}
+          aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" > ~/.aws/credentials
+        env: 
+          AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_AWS_TERRAFORM_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_AWS_TERRAFORM_SECRET_ACCESS_KEY }}
+
+      - name: "intialize terraform"
+        run: terraform init
+
+      - name: "validate terraform"
+        run: terraform validate -no-color
+
+      - name: "Run terraform apply"
+        run: terraform apply -auto-approve -no-color
+
+```
+* If you set up success and create a PR to testing:
+  <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/CICD.png?raw=true">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/CICD.png?raw=true">
+      <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/CICD.png?raw=true">
+  </picture>
