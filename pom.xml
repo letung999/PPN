@@ -103,7 +103,7 @@
             <artifactId>spring-security-config</artifactId>
             <version>${spring-security-config.version}</version>
         </dependency>
-
+      
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
