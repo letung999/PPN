@@ -17,15 +17,15 @@ public class JwtTokenProvider {
     private String JWT_SECRET;
 
     @Value("${ppn.app.jwt.expiration}")
-    private String JWT_EXPIRATION;
+    private Long JWT_EXPIRATION;
 
 
-    public String generateToken(CustomUserDetails userDetails) {
-        Date currentDate = new Date();
-        Date expiryDate = new Date(currentDate.getTime() + JWT_EXPIRATION);
+    public String generateToken(CustomUserDetails customUserDetails) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
         return Jwts.builder()
-                .setSubject(userDetails.getUsers().getEmail())
-                .setIssuedAt(currentDate)
+                .setSubject(customUserDetails.getUsers().getEmail())
+                .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
                 .compact();
@@ -33,9 +33,8 @@ public class JwtTokenProvider {
 
 
     public String getUserNameFromJWT(String token) {
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parser()
                 .setSigningKey(JWT_SECRET)
-                .build()
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
@@ -43,9 +42,8 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parserBuilder()
+            Jwts.parser()
                     .setSigningKey(JWT_SECRET)
-                    .build()
                     .parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException ex) {
