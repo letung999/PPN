@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+
+import static com.ppn.ppn.constant.MessageStatus.ERR_MSG_SOME_THING_WENT_WRONG;
+import static com.ppn.ppn.constant.MessageStatus.ERR_MSG_UNAUTHENTICATED_ACCESS;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -48,10 +52,10 @@ public class AuthController {
                 return ResponseEntity.ok(resultData);
 
             } else {
-                return ResponseEntity.ok(new LoginResponse(HttpStatus.BAD_REQUEST, "ERR_MSG_UNAUTHENTICATED_ACCESS"));
+                return ResponseEntity.ok(new LoginResponse(HttpStatus.BAD_REQUEST, ERR_MSG_UNAUTHENTICATED_ACCESS));
             }
         } catch (Exception ex) {
-            return ResponseEntity.ok(new LoginResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "ERR_MSG_SOME_THING_WENT_WRONG"));
+            return ResponseEntity.ok(new LoginResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ERR_MSG_SOME_THING_WENT_WRONG));
         }
     }
 }
