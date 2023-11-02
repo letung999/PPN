@@ -1,5 +1,6 @@
 package com.ppn.ppn.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,12 +36,15 @@ public class Users extends BaseEntity {
     @Column(name = "status")
     private String status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<Payment> payments;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<Car> cars;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),

@@ -1,5 +1,6 @@
 package com.ppn.ppn.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class Car extends BaseEntity {
     @Column(name = "model")
     private String model;
 
+    @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "userId")
     private Users users;

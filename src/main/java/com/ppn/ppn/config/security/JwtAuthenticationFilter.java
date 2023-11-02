@@ -28,18 +28,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (!request.getRequestURI().contains("/login") && !request.getRequestURI().contains("/getByEmail")) {
-            String jwt = getJwtFromRequest(request);
-            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-                String userName = jwtTokenProvider.getUserNameFromJWT(jwt);
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
-                if (userDetails != null) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            if (!request.getRequestURI().contains("/login") && !request.getRequestURI().contains("/getByEmail")) {
+                String jwt = getJwtFromRequest(request);
+                if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+                    String userName = jwtTokenProvider.getUserNameFromJWT(jwt);
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
+                    if (userDetails != null) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             }
+        } catch (Exception ex){
+            log.error("failed on set user authentication", ex);
         }
+        filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
