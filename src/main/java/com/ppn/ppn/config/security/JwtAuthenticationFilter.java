@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -29,19 +30,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            if (!request.getRequestURI().contains("/login") && !request.getRequestURI().contains("/getByEmail")) {
-                String jwt = getJwtFromRequest(request);
-                if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-                    String userName = jwtTokenProvider.getUserNameFromJWT(jwt);
-                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
-                    if (userDetails != null) {
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
+            String correlationId = getCorrelationId(request);
+            log.info("start REST with request {} with correlationId {}", request.getRequestURI(), correlationId);
+            if (correlationId != null) {
+                if (!request.getRequestURI().contains("/login")) {
+                    String jwt = getJwtFromRequest(request);
+                    if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+                        String userName = jwtTokenProvider.getUserNameFromJWT(jwt);
+                        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
+                        if (userDetails != null) {
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
                     }
                 }
+            } else {
+                correlationId = UUID.randomUUID().toString();
+                log.info("No correlationId found in header. Generated: {}", correlationId);
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             log.error("failed on set user authentication", ex);
         }
         filterChain.doFilter(request, response);
