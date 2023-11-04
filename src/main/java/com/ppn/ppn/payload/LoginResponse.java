@@ -22,11 +22,9 @@ public class LoginResponse<T> {
         this.message = message;
     }
 
-
     public LoginResponse(HttpStatus status, T data, String message) {
         this.status = status;
         this.data = data;
         this.message = message;
     }
-
 }

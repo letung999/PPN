@@ -44,7 +44,9 @@ public class Users extends BaseEntity {
     @OneToMany(mappedBy = "users")
     private List<Car> cars;
 
-    @JsonIgnore
+    @Column(name = "verifyCode")
+    private String verifyCode;
+
     @ManyToMany
     @JoinTable(
             joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),
