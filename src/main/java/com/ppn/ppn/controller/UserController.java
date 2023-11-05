@@ -6,15 +6,21 @@ import com.ppn.ppn.payload.VerifyMailRequest;
 import com.ppn.ppn.service.EmailSenderServiceImpl;
 import com.ppn.ppn.service.UsersServiceImpl;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.ppn.ppn.constant.HostConstant.HOST_URL;
+
 
 @RequestMapping("api/v1/users")
 @RestController
@@ -26,9 +32,39 @@ public class UserController {
     @Autowired
     private EmailSenderServiceImpl emailSenderService;
 
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
+    @Value("${cox.automation.email}")
+    private String coxAutomationEmail;
+
+    @Value("${cox.name}")
+    private String nameCompany;
+
     @PostMapping("/create")
     public ResponseEntity<UsersDto> add(@RequestBody @Valid UsersDto usersDto){
         UsersDto result = usersService.createUsers(usersDto);
+        //send mail for user:
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("name", usersDto.getEmail());
+        properties.put("location", "Viet Nam");
+        properties.put("sign", nameCompany);
+        properties.put("linkConfirm", HOST_URL + httpServletRequest.getRequestURI());
+
+        VerifyMailRequest mail = VerifyMailRequest.builder()
+                .from(coxAutomationEmail)
+                .to("letung012000@gmail.com")// email from request body
+                .htmlTemplate(new HtmlTemplate("VerifyEmail", properties))
+                .subject("This is email confirm from COX-AUTOMATION")
+                .build();
+        try {
+            log.info("send email to user {}", usersDto.getEmail());
+            emailSenderService.sendMail(mail);
+        } catch (MessagingException e) {
+            log.error("send email fail! with email {}", usersDto.getEmail());
+            throw new RuntimeException(e);
+        }
+
         return ResponseEntity.ok(result);
     }
 
@@ -39,13 +75,14 @@ public class UserController {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("name", "John Michel!");
         properties.put("location", "Viet Nam");
-        properties.put("sign", "Java Developer");
+        properties.put("sign", nameCompany);
+        properties.put("linkConfirm", HOST_URL + httpServletRequest.getRequestURI());
 
         VerifyMailRequest mail = VerifyMailRequest.builder()
-                .from("testfrom@gmail.com")
-                .to("letung012000@gmail.com")
-                .htmlTemplate(new HtmlTemplate("Registration", properties))
-                .subject("This is sample email with spring boot and thymeleaf")
+                .from(coxAutomationEmail)
+                .to("letung012000@gmail.com")// email from request body
+                .htmlTemplate(new HtmlTemplate("VerifyEmail", properties))
+                .subject("This is email confirm from COX-AUTOMATION")
                 .build();
 
         emailSenderService.sendMail(mail);
