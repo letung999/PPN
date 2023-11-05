@@ -18,6 +18,9 @@ public class UsersDto extends BaseEntityDto {
     @NotBlank(message = "email is required")
     private String email;
 
+    @NotBlank(message = "password is required")
+    private String password;
+
     @NotBlank(message = "firstName is required")
     private String firstName;
 
@@ -27,8 +30,9 @@ public class UsersDto extends BaseEntityDto {
     @NotBlank(message = "phoneNumber is required")
     private String phoneNumber;
 
-    @NotBlank(message = "status is required")
     private String status;
+
+    private String verifyCode;
 
     private List<Payment> payments;
 

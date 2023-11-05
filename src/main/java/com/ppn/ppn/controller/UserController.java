@@ -11,15 +11,13 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ppn.ppn.constant.HostConstant.HOST_URL;
+import static com.ppn.ppn.constant.HostConstant.HOST_URL_VERIFY_CODE;
 
 
 @RequestMapping("api/v1/users")
@@ -42,14 +40,14 @@ public class UserController {
     private String nameCompany;
 
     @PostMapping("/create")
-    public ResponseEntity<UsersDto> add(@RequestBody @Valid UsersDto usersDto){
+    public ResponseEntity<UsersDto> add(@RequestBody @Valid UsersDto usersDto) {
         UsersDto result = usersService.createUsers(usersDto);
         //send mail for user:
         Map<String, Object> properties = new HashMap<>();
         properties.put("name", usersDto.getEmail());
         properties.put("location", "Viet Nam");
         properties.put("sign", nameCompany);
-        properties.put("linkConfirm", HOST_URL + httpServletRequest.getRequestURI());
+        properties.put("linkConfirm", HOST_URL_VERIFY_CODE + result.getVerifyCode());
 
         VerifyMailRequest mail = VerifyMailRequest.builder()
                 .from(coxAutomationEmail)
@@ -69,23 +67,14 @@ public class UserController {
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<String> sendMail() throws MessagingException {
-        log.info("sending sample email");
-
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("name", "John Michel!");
-        properties.put("location", "Viet Nam");
-        properties.put("sign", nameCompany);
-        properties.put("linkConfirm", HOST_URL + httpServletRequest.getRequestURI());
-
-        VerifyMailRequest mail = VerifyMailRequest.builder()
-                .from(coxAutomationEmail)
-                .to("letung012000@gmail.com")// email from request body
-                .htmlTemplate(new HtmlTemplate("VerifyEmail", properties))
-                .subject("This is email confirm from COX-AUTOMATION")
-                .build();
-
-        emailSenderService.sendMail(mail);
+    public ResponseEntity<String> verifyEmail(@RequestParam(name = "verifyCode") String verifyCode) throws MessagingException {
+        log.info("verify code: {}", verifyCode);
+        try{
+            usersService.verifyUser(verifyCode);
+        }catch (Exception ex){
+            log.info("verify fail with code: {}", verifyCode);
+            ex.printStackTrace();
+        }
         return ResponseEntity.ok("success");
     }
 }
