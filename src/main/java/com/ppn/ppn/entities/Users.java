@@ -46,6 +46,7 @@ public class Users extends BaseEntity {
 
     @Column(name = "verifyCode")
     private String verifyCode;
+
     @ManyToMany
     @JoinTable(
             joinColumns = @JoinColumn(name = "userId", referencedColumnName = "userId"),
