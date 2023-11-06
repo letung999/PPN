@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.ppn.ppn.constant.RoleConstant.SYSTEM_ADMIN;
+
 @Component
 public class InitialData implements ApplicationRunner {
     @Autowired
@@ -29,7 +31,7 @@ public class InitialData implements ApplicationRunner {
         List<Role> roles = roleRepository.findAll();
         if (roles.isEmpty()) {
             Role role = new Role();
-            role.setRoleName("System Admin");
+            role.setRoleName(SYSTEM_ADMIN);
             roleRepository.save(role);
 
             roles = roleRepository.findAll();

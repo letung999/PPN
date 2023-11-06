@@ -4,7 +4,9 @@ import com.ppn.ppn.dto.UsersDto;
 import com.ppn.ppn.entities.Role;
 import com.ppn.ppn.entities.Users;
 import com.ppn.ppn.exception.ResourceDuplicateException;
+import com.ppn.ppn.exception.ResourcesNotFoundException;
 import com.ppn.ppn.mapper.UsersMapper;
+import com.ppn.ppn.repository.RoleRepository;
 import com.ppn.ppn.repository.UsersRepository;
 import com.ppn.ppn.service.constract.IUsersService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 
 import static com.ppn.ppn.constant.ApprovalStatus.ACTIVE;
 import static com.ppn.ppn.constant.ApprovalStatus.PENDING;
+import static com.ppn.ppn.constant.RoleConstant.VIEWER;
+
+
+
 
 @Service
 @Slf4j
@@ -26,18 +33,33 @@ public class UsersServiceImpl implements IUsersService {
     private UsersRepository userRepository;
 
     @Autowired
+    private RoleRepository roleRepository;
+    
+    @Autowired
     private PasswordEncoder passwordEncoder;
     private UsersMapper usersMapper = UsersMapper.INSTANCE;
 
     @Override
     public UsersDto createUsers(UsersDto usersDto) {
         Optional<Users> usersEntity = userRepository.findByEmail(usersDto.getEmail());
-        if(!Objects.isNull(usersEntity)){
+        if (usersEntity.isPresent()) {
             throw new ResourceDuplicateException("Email", usersDto.getEmail());
         }
+
+        Optional<Role> role = roleRepository.findByRoleName(VIEWER);
+        if (role.isEmpty()) {
+            throw new ResourcesNotFoundException("Role", VIEWER);
+        }
+        Set<Role> roles = new HashSet<>();
+        roles.add(role.get());
+
+        //set data
         Users users = usersMapper.usersDtoUsers(usersDto);
         users.setStatus(String.valueOf(PENDING));
-        users.setVerifyCode(randomString(20));
+        users.setVerifyCode(randomString(30));
+        users.setPassword(passwordEncoder.encode(usersDto.getPassword()));
+
+        users.setRoles(roles);
         Users dataSaved = userRepository.save(users);
         return usersMapper.usersToUsersDto(dataSaved);
     }
@@ -45,8 +67,8 @@ public class UsersServiceImpl implements IUsersService {
     @Override
     public boolean verifyUser(String verifyCode) {
         Optional<Users> users = userRepository.findByVerifyCode(verifyCode);
-        if (Objects.isNull(users)) {
-            return false;
+        if (users.isEmpty()) {
+            throw new ResourcesNotFoundException("users", verifyCode);
         }
         users.get().setStatus(String.valueOf(ACTIVE));
         userRepository.save(users.get());
@@ -72,7 +94,7 @@ public class UsersServiceImpl implements IUsersService {
         Random random = new Random();
         StringBuilder resultData = new StringBuilder();
         for (int i = 0; i < length; ++i) {
-            int index = random.nextInt(length) + 0;
+            int index = random.nextInt(data.length()) + 0;
             resultData.append(data.charAt(index));
         }
         return resultData.toString();
