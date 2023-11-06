@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.ppn.ppn.constant.HostConstant.HOST_URL_VERIFY_CODE;
+import static com.ppn.ppn.constant.MessageStatus.ERR_MSG_VERIFY_SUCCESS;
 
 @RequestMapping("api/v1/users")
 @RestController
@@ -68,12 +69,7 @@ public class UserController {
     @GetMapping("/verify-email")
     public ResponseEntity<String> verifyEmail(@RequestParam(name = "verifyCode") String verifyCode) throws MessagingException {
         log.info("verify code: {}", verifyCode);
-        try{
-            usersService.verifyUser(verifyCode);
-        }catch (Exception ex){
-            log.info("verify fail with code: {}", verifyCode);
-            ex.printStackTrace();
-        }
-        return ResponseEntity.ok("success");
+        usersService.verifyUser(verifyCode);
+        return ResponseEntity.ok(ERR_MSG_VERIFY_SUCCESS);
     }
 }

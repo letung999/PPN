@@ -63,4 +63,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ResourcesNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourcesNotFoundException(ResourcesNotFoundException ex,
+                                                                          WebRequest webRequest) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .localDateTime(LocalDateTime.now())
+                .message(ex.getMessage())
+                .statusCode(HttpStatusCode.valueOf(404).toString())
+                .path(webRequest.getDescription(false))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
 }
