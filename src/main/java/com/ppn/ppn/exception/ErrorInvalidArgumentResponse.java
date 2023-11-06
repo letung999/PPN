@@ -11,7 +11,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Builder
-public class ErrorInvalidArgument {
+public class ErrorInvalidArgumentResponse {
     private LocalDateTime localDateTime;
     private String path;
     private String status;

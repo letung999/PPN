@@ -1,10 +1,13 @@
 package com.ppn.ppn.service;
 
 import com.ppn.ppn.dto.UsersDto;
+import com.ppn.ppn.entities.Role;
 import com.ppn.ppn.entities.Users;
+import com.ppn.ppn.exception.ResourceDuplicateException;
 import com.ppn.ppn.mapper.UsersMapper;
 import com.ppn.ppn.repository.UsersRepository;
 import com.ppn.ppn.service.constract.IUsersService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import static com.ppn.ppn.constant.ApprovalStatus.ACTIVE;
 import static com.ppn.ppn.constant.ApprovalStatus.PENDING;
 
 @Service
+@Slf4j
 public class UsersServiceImpl implements IUsersService {
     @Autowired
     private UsersRepository userRepository;
@@ -27,9 +31,15 @@ public class UsersServiceImpl implements IUsersService {
 
     @Override
     public UsersDto createUsers(UsersDto usersDto) {
+        Optional<Users> usersEntity = userRepository.findByEmail(usersDto.getEmail());
+        if(!Objects.isNull(usersEntity)){
+            throw new ResourceDuplicateException("Email", usersDto.getEmail());
+        }
         Users users = usersMapper.usersDtoUsers(usersDto);
         users.setStatus(String.valueOf(PENDING));
         users.setVerifyCode(randomString(20));
+
+
         Users dataSaved = userRepository.save(users);
         return usersMapper.usersToUsersDto(dataSaved);
     }
