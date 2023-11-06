@@ -38,8 +38,6 @@ public class UsersServiceImpl implements IUsersService {
         Users users = usersMapper.usersDtoUsers(usersDto);
         users.setStatus(String.valueOf(PENDING));
         users.setVerifyCode(randomString(20));
-
-
         Users dataSaved = userRepository.save(users);
         return usersMapper.usersToUsersDto(dataSaved);
     }
