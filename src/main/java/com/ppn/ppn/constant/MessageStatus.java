@@ -9,4 +9,5 @@ public class MessageStatus {
     public static final String ERR_MSG_DATA_DUPLICATED = "data is exist";
     public static final String ERR_MSG_DATA_NOT_FOUND = "data is not found";
     public static final String ERR_MSG_CAR_ASSIGN_USER = "the car {0} is assigning for a user {1} active, cannot be deleted";
+    public static final String ERR_MSG_ROLE_IS_NOT_CONTAIN = "role input value is not contain role have defined in system";
 }
