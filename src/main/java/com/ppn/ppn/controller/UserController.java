@@ -1,6 +1,7 @@
 package com.ppn.ppn.controller;
 
 import com.ppn.ppn.dto.UsersDto;
+import com.ppn.ppn.payload.APIResponse;
 import com.ppn.ppn.payload.HtmlTemplate;
 import com.ppn.ppn.payload.VerifyMailRequest;
 import com.ppn.ppn.service.EmailSenderServiceImpl;
@@ -14,11 +15,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.ppn.ppn.constant.HostConstant.HOST_URL_VERIFY_CODE;
 import static com.ppn.ppn.constant.MessageStatus.ERR_MSG_VERIFY_SUCCESS;
+import static com.ppn.ppn.constant.MessageStatus.INF_MSG_SUCCESSFULLY;
 
 @RequestMapping("api/v1/users")
 @RestController
@@ -40,7 +43,7 @@ public class UserController {
     private String nameCompany;
 
     @PostMapping("/create")
-    public ResponseEntity<UsersDto> add(@RequestBody @Valid UsersDto usersDto) {
+    public ResponseEntity<?> add(@RequestBody @Valid UsersDto usersDto) {
         UsersDto result = usersService.createUsers(usersDto);
         //send mail for user:
         Map<String, Object> properties = new HashMap<>();
@@ -62,14 +65,27 @@ public class UserController {
             log.error("send email fail! with email {}", usersDto.getEmail());
             throw new RuntimeException(e);
         }
+        APIResponse apiResponse = APIResponse.builder()
+                .message(INF_MSG_SUCCESSFULLY)
+                .timeStamp(LocalDateTime.now())
+                .isSuccess(true)
+                .statusCode(201)
+                .data(result)
+                .build();
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(@RequestParam(name = "verifyCode") String verifyCode) throws MessagingException {
+    public ResponseEntity<?> verifyEmail(@RequestParam(name = "verifyCode") String verifyCode) throws MessagingException {
         log.info("verify code: {}", verifyCode);
         usersService.verifyUser(verifyCode);
-        return ResponseEntity.ok(ERR_MSG_VERIFY_SUCCESS);
+        APIResponse apiResponse = APIResponse.builder()
+                .message(ERR_MSG_VERIFY_SUCCESS)
+                .timeStamp(LocalDateTime.now())
+                .statusCode(200)
+                .isSuccess(true)
+                .build();
+        return ResponseEntity.ok(apiResponse);
     }
 }
