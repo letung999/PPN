@@ -55,7 +55,7 @@ public class UsersServiceImpl implements IUsersService {
         }
         return null;
     }
-  
+
     //private methods
     private String randomString(int length) {
         String data = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -69,4 +69,5 @@ public class UsersServiceImpl implements IUsersService {
         }
         return resultData.toString();
     }
+
 }
