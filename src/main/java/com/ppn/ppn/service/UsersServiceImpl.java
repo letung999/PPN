@@ -23,6 +23,9 @@ import static com.ppn.ppn.constant.ApprovalStatus.ACTIVE;
 import static com.ppn.ppn.constant.ApprovalStatus.PENDING;
 import static com.ppn.ppn.constant.RoleConstant.VIEWER;
 
+
+
+
 @Service
 @Slf4j
 public class UsersServiceImpl implements IUsersService {
@@ -31,6 +34,7 @@ public class UsersServiceImpl implements IUsersService {
 
     @Autowired
     private RoleRepository roleRepository;
+    
     @Autowired
     private PasswordEncoder passwordEncoder;
     private UsersMapper usersMapper = UsersMapper.INSTANCE;
