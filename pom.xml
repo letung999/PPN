@@ -18,12 +18,15 @@
         <spring-cloud.version>2022.0.1</spring-cloud.version>
         <mapstruct.version>1.5.3.Final</mapstruct.version>
         <mapstruct-processor.version>1.5.3.Final</mapstruct-processor.version>
-        <spring-cloud-starter-aws-parameter-store-config.version>2.2.6.RELEASE</spring-cloud-starter-aws-parameter-store-config.version>
+        <spring-cloud-starter-aws-parameter-store-config.version>2.2.6.RELEASE
+        </spring-cloud-starter-aws-parameter-store-config.version>
         <spring-security-config.version>6.0.2</spring-security-config.version>
         <jjwt.version>0.9.1</jjwt.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <thymeleaf-spring5.version>3.0.11.RELEASE</thymeleaf-spring5.version>
+        <aws-java-sdk-s3.version>1.12.319</aws-java-sdk-s3.version>
+        <commons-io.version>2.11.0</commons-io.version>
     </properties>
     <dependencies>
         <dependency>
@@ -104,7 +107,7 @@
             <artifactId>spring-security-config</artifactId>
             <version>${spring-security-config.version}</version>
         </dependency>
-      
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
@@ -134,6 +137,19 @@
             <artifactId>thymeleaf-spring5</artifactId>
             <version>${thymeleaf-spring5.version}</version>
         </dependency>
+        <!--        connect aws-->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws-java-sdk-s3.version}</version>
+        </dependency>
+        <!--        file-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
