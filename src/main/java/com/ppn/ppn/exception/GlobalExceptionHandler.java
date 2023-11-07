@@ -1,5 +1,7 @@
 package com.ppn.ppn.exception;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -74,4 +76,65 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(FileDownloadException.class)
+    public ResponseEntity<ErrorResponse> handleFileDownloadException(FileDownloadException ex,
+                                                                     WebRequest webRequest) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .localDateTime(LocalDateTime.now())
+                .message(ex.getMessage())
+                .statusCode(HttpStatusCode.valueOf(204).toString())
+                .path(webRequest.getDescription(false))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<ErrorResponse> handleFileUploadException(FileUploadException ex,
+                                                                   WebRequest webRequest) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .localDateTime(LocalDateTime.now())
+                .message(ex.getMessage())
+                .statusCode(HttpStatusCode.valueOf(400).toString())
+                .path(webRequest.getDescription(false))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileEmptyException.class)
+    public ResponseEntity<ErrorResponse> handleFileEmptyException(FileEmptyException ex,
+                                                                  WebRequest webRequest) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .localDateTime(LocalDateTime.now())
+                .message(ex.getMessage())
+                .statusCode(HttpStatusCode.valueOf(204).toString())
+                .path(webRequest.getDescription(false))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.NO_CONTENT);
+    }
+
+    // handle exception occur when the call was transmitted successfully but Amazon S3 can't process request.
+    @ExceptionHandler(AmazonServiceException.class)
+    public ResponseEntity<Object> handleAmazonServiceException(AmazonServiceException ex, WebRequest webRequest){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .localDateTime(LocalDateTime.now())
+                .message(ex.getMessage())
+                .statusCode(HttpStatusCode.valueOf(409).toString())
+                .path(webRequest.getDescription(false))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    //handle exception occur when can't contact with Amazon S3
+    @ExceptionHandler(SdkClientException.class)
+    public ResponseEntity<Object> handleSdkClientException(SdkClientException ex, WebRequest webRequest){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .localDateTime(LocalDateTime.now())
+                .message(ex.getMessage())
+                .statusCode(HttpStatusCode.valueOf(503).toString())
+                .path(webRequest.getDescription(false))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
 }

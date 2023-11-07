@@ -10,5 +10,10 @@ public class MessageStatus {
     public static final String ERR_MSG_DATA_NOT_FOUND = "data is not found";
     public static final String ERR_MSG_CAR_ASSIGN_USER = "the car {0} is assigning for a user {1} active, cannot be deleted";
     public static final String ERR_MSG_ROLE_IS_NOT_CONTAIN = "role input value is not contain role have defined in system";
-    public static final String ERR_MSG_VERIFY_SUCCESS="user have been verified success!";
+    public static final String ERR_MSG_VERIFY_SUCCESS = "user have been verified success!";
+    public static final String ERR_MSG_EMPTY_FILE = "File is empty. Can't save an empty file";
+    public static final String ERR_MSG_DOWN_LOAD_FILE = "Bucket is not exist or empty";
+    public static final String ERR_MSG_UP_LOAD_FILE = "Invalid file. File extension or file name is not supported";
+
+
 }
