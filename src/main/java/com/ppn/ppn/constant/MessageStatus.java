@@ -14,6 +14,4 @@ public class MessageStatus {
     public static final String ERR_MSG_EMPTY_FILE = "File is empty. Can't save an empty file";
     public static final String ERR_MSG_DOWN_LOAD_FILE = "Bucket is not exist or empty";
     public static final String ERR_MSG_UP_LOAD_FILE = "Invalid file. File extension or file name is not supported";
-
-
 }

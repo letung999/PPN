@@ -76,7 +76,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-
+  
     @ExceptionHandler(FileDownloadException.class)
     public ResponseEntity<ErrorResponse> handleFileDownloadException(FileDownloadException ex,
                                                                      WebRequest webRequest) {
@@ -136,5 +136,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
     }
-
 }
