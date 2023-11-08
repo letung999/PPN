@@ -1,6 +1,6 @@
 # PPN
->Overview description of this project: This a mock module that I have researched about technologies used in one of the modules of the C99 project at FPT Software and I have implemented it in this project.
-# Technologies in used
+>Overview description of this project: This a mock module that I have researched about technologies used in practical projects and I have implemented it in this project.
+# Technologies are used
 - Use Java version 17, Spring framework version 3
 - Use services of AWS
   * RDS
