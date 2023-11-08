@@ -3,14 +3,15 @@ package com.ppn.ppn.controller;
 import com.ppn.ppn.exception.FileEmptyException;
 import com.ppn.ppn.payload.APIResponse;
 import com.ppn.ppn.service.FileUploadToS3ServiceImpl;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -59,5 +60,20 @@ public class FileController {
                 .statusCode(400)
                 .build();
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<?> downloadFileFromS3(@RequestParam("fileName") @NotBlank @NotNull String fileName) throws IOException {
+        Object response = fileUploadToS3Service.downloadFileFromS3(fileName);
+        if (response != null) {
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"").body(response);
+        } else {
+            APIResponse apiResponse = APIResponse.builder()
+                    .message("File could not be downloaded")
+                    .isSuccess(false)
+                    .statusCode(400)
+                    .build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        }
     }
 }
