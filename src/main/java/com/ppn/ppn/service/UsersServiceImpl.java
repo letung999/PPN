@@ -6,24 +6,26 @@ import com.ppn.ppn.entities.Users;
 import com.ppn.ppn.exception.ResourceDuplicateException;
 import com.ppn.ppn.exception.ResourcesNotFoundException;
 import com.ppn.ppn.mapper.UsersMapper;
+import com.ppn.ppn.payload.SearchUserRequest;
+import com.ppn.ppn.payload.SearchUserResponse;
 import com.ppn.ppn.repository.RoleRepository;
 import com.ppn.ppn.repository.UsersRepository;
 import com.ppn.ppn.service.constract.IUsersService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ppn.ppn.constant.ApprovalStatus.ACTIVE;
 import static com.ppn.ppn.constant.ApprovalStatus.PENDING;
 import static com.ppn.ppn.constant.RoleConstant.VIEWER;
-
-
 
 
 @Service
@@ -34,7 +36,7 @@ public class UsersServiceImpl implements IUsersService {
 
     @Autowired
     private RoleRepository roleRepository;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
     private UsersMapper usersMapper = UsersMapper.INSTANCE;
@@ -75,6 +77,59 @@ public class UsersServiceImpl implements IUsersService {
         return true;
     }
 
+    @Override
+    public List<UsersDto> all(Pageable pageable) {
+        Page<Users> usersPage = userRepository.findAll(pageable);
+        List<Users> usersList = usersPage.getContent();
+        if (usersList.size() == 0) {
+            return new ArrayList<UsersDto>();
+        }
+        List<UsersDto> usersDtoList = usersList.stream().map(users -> {
+            UsersDto usersDto = new UsersDto();
+            usersDto.setUserId(users.getUserId());
+            usersDto.setFirstName(users.getFirstName());
+            usersDto.setCars(users.getCars());
+            usersDto.setPhoneNumber(users.getPhoneNumber());
+            usersDto.setGender(users.getGender());
+            usersDto.setEmail(users.getEmail());
+            usersDto.setPayments(users.getPayments());
+            users.setRoles(users.getRoles());
+            return usersDto;
+        }).collect(Collectors.toList());
+
+        return usersDtoList;
+    }
+
+    @Override
+    public SearchUserResponse search(SearchUserRequest request, Pageable pageable) {
+        Specification<Users> spec = buildSearchUserFilter(request);
+        Page<Users> usersPage = userRepository.findAll(spec, pageable);
+        List<Users> usersData = usersPage.getContent();
+        //mapper Data
+        List<UsersDto> usersDtos = usersData.stream().map(users -> {
+            UsersDto usersDto = new UsersDto();
+            usersDto.setEmail(users.getEmail());
+            usersDto.setPhoneNumber(users.getPhoneNumber());
+            usersDto.setPayments(users.getPayments());
+            usersDto.setFirstName(users.getFirstName());
+            usersDto.setStatus(users.getStatus());
+            usersDto.setCars(users.getCars());
+            usersDto.setGender(users.getPhoneNumber());
+            usersDto.setCreatedDate(users.getCreatedDate());
+            usersDto.setUpdatedDate(users.getUpdatedDate());
+            return usersDto;
+        }).collect(Collectors.toList());
+
+        SearchUserResponse searchUserResponse = SearchUserResponse.builder()
+                .userDtoList(usersDtos)
+                .numOfItems(usersPage.getTotalElements())
+                .numOfPage(usersPage.getTotalPages())
+                .build();
+
+        return searchUserResponse;
+    }
+
+
     public Users checkLogin(Users user) {
         Users userCheck = null;
         if (user.getEmail() != null) {
@@ -100,4 +155,31 @@ public class UsersServiceImpl implements IUsersService {
         return resultData.toString();
     }
 
+    private Specification<Users> buildSearchUserFilter(SearchUserRequest request) {
+        return ((root, query, criteriaBuilder) -> {
+            List<Predicate> finalFilter = new ArrayList<>();
+            if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+                finalFilter.add(criteriaBuilder.equal(root.get("email"), request.getEmail()));
+            }
+            if (request.getGender() != null && !request.getGender().isEmpty()) {
+                finalFilter.add(criteriaBuilder.equal(root.get("gender"), request.getGender()));
+            }
+            if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
+                finalFilter.add(criteriaBuilder.equal(root.get("phoneNumber"), request.getPhoneNumber()));
+            }
+            if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+                finalFilter.add(criteriaBuilder.equal(root.get("status"), request.getStatus()));
+            }
+            if (request.getFirstName() != null && !request.getFirstName().isEmpty()) {
+                finalFilter.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + request.getFirstName().toLowerCase() + "%"));
+            }
+            if (request.isAscending() && request.getSortBy() != null && !request.getSortBy().isEmpty()) {
+                query.orderBy(criteriaBuilder.asc(root.get(request.getSortBy())));
+            }
+            if (!request.isAscending() && request.getSortBy() != null && !request.getSortBy().isEmpty()) {
+                query.orderBy(criteriaBuilder.desc(root.get(request.getSortBy())));
+            }
+            return criteriaBuilder.and(finalFilter.toArray(new Predicate[0]));
+        });
+    }
 }

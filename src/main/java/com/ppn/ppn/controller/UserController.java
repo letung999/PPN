@@ -1,9 +1,7 @@
 package com.ppn.ppn.controller;
 
 import com.ppn.ppn.dto.UsersDto;
-import com.ppn.ppn.payload.APIResponse;
-import com.ppn.ppn.payload.HtmlTemplate;
-import com.ppn.ppn.payload.VerifyMailRequest;
+import com.ppn.ppn.payload.*;
 import com.ppn.ppn.service.EmailSenderServiceImpl;
 import com.ppn.ppn.service.UsersServiceImpl;
 import jakarta.mail.MessagingException;
@@ -12,16 +10,20 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.ppn.ppn.constant.HostConstant.HOST_URL_VERIFY_CODE;
 import static com.ppn.ppn.constant.MessageStatus.ERR_MSG_VERIFY_SUCCESS;
 import static com.ppn.ppn.constant.MessageStatus.INF_MSG_SUCCESSFULLY;
+import static com.ppn.ppn.constant.PagingConstant.PAGE_DEFAULT;
+import static com.ppn.ppn.constant.PagingConstant.SIZE_DEFAULT;
 
 @RequestMapping("api/v1/users")
 @RestController
@@ -85,6 +87,34 @@ public class UserController {
                 .timeStamp(LocalDateTime.now())
                 .statusCode(200)
                 .isSuccess(true)
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> all(@RequestParam(value = PAGE_DEFAULT) @Valid Integer page,
+                                 @RequestParam(value = SIZE_DEFAULT) @Valid Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<UsersDto> resultData = usersService.all(pageRequest);
+        APIResponse apiResponse = APIResponse.builder()
+                .message(INF_MSG_SUCCESSFULLY)
+                .timeStamp(LocalDateTime.now())
+                .statusCode(200)
+                .data(resultData)
+                .isSuccess(true)
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<?> search(@RequestBody SearchUserRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.getPageIndex(), request.getPageSize());
+        SearchUserResponse searchUserResponse = usersService.search(request, pageRequest);
+        APIResponse apiResponse = APIResponse.builder()
+                .message(INF_MSG_SUCCESSFULLY)
+                .isSuccess(true)
+                .timeStamp(LocalDateTime.now())
+                .data(searchUserResponse)
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
