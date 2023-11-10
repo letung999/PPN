@@ -12,6 +12,9 @@ public class ResourcesNotFoundException extends RuntimeException {
     private String fieldName;
     private String value;
 
+    public ResourcesNotFoundException() {
+        super(String.format(ERR_MSG_DATA_NOT_FOUND));
+    }
     public ResourcesNotFoundException(String fieldName, String value) {
         super(String.format("%s: " + ERR_MSG_DATA_NOT_FOUND + " %s: ", fieldName, value));
         this.fieldName = fieldName;
