@@ -25,6 +25,7 @@ import static com.ppn.ppn.constant.MessageStatus.INF_MSG_SUCCESSFULLY;
 import static com.ppn.ppn.constant.PagingConstant.PAGE_DEFAULT;
 import static com.ppn.ppn.constant.PagingConstant.SIZE_DEFAULT;
 
+
 @RequestMapping("api/v1/users")
 @RestController
 @Slf4j
