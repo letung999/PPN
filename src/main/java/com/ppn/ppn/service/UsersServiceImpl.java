@@ -92,8 +92,9 @@ public class UsersServiceImpl implements IUsersService {
             usersDto.setPhoneNumber(users.getPhoneNumber());
             usersDto.setGender(users.getGender());
             usersDto.setEmail(users.getEmail());
+            usersDto.setStatus(users.getStatus());
             usersDto.setPayments(users.getPayments());
-            users.setRoles(users.getRoles());
+            usersDto.setRoles(users.getRoles());
             return usersDto;
         }).collect(Collectors.toList());
 

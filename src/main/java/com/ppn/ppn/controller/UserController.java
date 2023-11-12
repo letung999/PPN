@@ -1,9 +1,16 @@
 package com.ppn.ppn.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ppn.ppn.dto.UsersDto;
+import com.ppn.ppn.entities.CacheData;
 import com.ppn.ppn.payload.*;
+import com.ppn.ppn.repository.CacheDataRepository;
 import com.ppn.ppn.service.EmailSenderServiceImpl;
 import com.ppn.ppn.service.UsersServiceImpl;
+import com.ppn.ppn.utils.BuildCacheKey;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -18,13 +25,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.ppn.ppn.constant.HostConstant.HOST_URL_VERIFY_CODE;
 import static com.ppn.ppn.constant.MessageStatus.ERR_MSG_VERIFY_SUCCESS;
 import static com.ppn.ppn.constant.MessageStatus.INF_MSG_SUCCESSFULLY;
 import static com.ppn.ppn.constant.PagingConstant.PAGE_DEFAULT;
 import static com.ppn.ppn.constant.PagingConstant.SIZE_DEFAULT;
-
 
 @RequestMapping("api/v1/users")
 @RestController
@@ -38,6 +45,9 @@ public class UserController {
 
     @Autowired
     private HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private CacheDataRepository cacheDataRepository;
 
     @Value("${cox.automation.email}")
     private String coxAutomationEmail;
@@ -93,10 +103,39 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> all(@RequestParam(value = PAGE_DEFAULT) @Valid Integer page,
-                                 @RequestParam(value = SIZE_DEFAULT) @Valid Integer size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+    public ResponseEntity<?> all(@RequestParam(defaultValue = PAGE_DEFAULT) @Valid Integer page,
+                                 @RequestParam(defaultValue = SIZE_DEFAULT) @Valid Integer size) throws JsonProcessingException {
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        String cacheKeyUser = BuildCacheKey.cacheKeyAllData("allUsers", page, size);
+        Optional<CacheData> cacheData = cacheDataRepository.findById(cacheKeyUser);
+
+        //cache hit
+        if (cacheData.isPresent()) {
+            String userAsString = cacheData.get().getValue();
+            TypeReference<List<UsersDto>> listType = new TypeReference<>() {
+            };
+            List<UsersDto> resultData = objectMapper.readValue(userAsString, listType);
+            APIResponse apiResponse = APIResponse.builder()
+                    .message(INF_MSG_SUCCESSFULLY)
+                    .timeStamp(LocalDateTime.now())
+                    .statusCode(200)
+                    .data(resultData)
+                    .isSuccess(true)
+                    .build();
+            return ResponseEntity.ok(apiResponse);
+        }
+
+        //cache miss
         List<UsersDto> resultData = usersService.all(pageRequest);
+        String usersAsString = objectMapper.writeValueAsString(resultData);
+        CacheData cache = new CacheData(cacheKeyUser, usersAsString);
+
+        //save cache
+        cacheDataRepository.save(cache);
+
         APIResponse apiResponse = APIResponse.builder()
                 .message(INF_MSG_SUCCESSFULLY)
                 .timeStamp(LocalDateTime.now())

@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import static com.ppn.ppn.constant.MessageStatus.INF_MSG_SUCCESSFULLY;
-import static com.ppn.ppn.constant.PagingConstant.PAGE_DEFAULT;
-import static com.ppn.ppn.constant.PagingConstant.SIZE_DEFAULT;
+
 
 @RestController
 @RequestMapping("/api/v1/company")
