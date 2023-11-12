@@ -115,7 +115,7 @@ public class UsersServiceImpl implements IUsersService {
             usersDto.setFirstName(users.getFirstName());
             usersDto.setStatus(users.getStatus());
             usersDto.setCars(users.getCars());
-            usersDto.setGender(users.getPhoneNumber());
+            usersDto.setGender(users.getGender());
             usersDto.setCreatedDate(users.getCreatedDate());
             usersDto.setUpdatedDate(users.getUpdatedDate());
             return usersDto;

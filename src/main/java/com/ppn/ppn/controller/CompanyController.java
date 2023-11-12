@@ -17,7 +17,6 @@ import java.util.List;
 
 import static com.ppn.ppn.constant.MessageStatus.INF_MSG_SUCCESSFULLY;
 
-
 @RestController
 @RequestMapping("/api/v1/company")
 public class CompanyController {

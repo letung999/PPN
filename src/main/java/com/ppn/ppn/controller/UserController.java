@@ -147,9 +147,34 @@ public class UserController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<?> search(@RequestBody SearchUserRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.getPageIndex(), request.getPageSize());
+    public ResponseEntity<?> search(@RequestBody SearchUserRequest request) throws JsonProcessingException {
+        PageRequest pageRequest = PageRequest.of(request.getPageIndex() - 1, request.getPageSize());
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String cacheKey = BuildCacheKey.buildCacheKeySearchUsers("searchUsers", request);
+        Optional<CacheData> cacheData = cacheDataRepository.findById(cacheKey);
+
+        //cache hit
+        if (cacheData.isPresent()) {
+            String usersAsString = cacheData.get().getValue();
+            TypeReference<SearchUserResponse> responseDataType = new TypeReference<SearchUserResponse>() {
+            };
+            SearchUserResponse searchUserResponse = objectMapper.readValue(usersAsString, responseDataType);
+            APIResponse apiResponse = APIResponse.builder()
+                    .message(INF_MSG_SUCCESSFULLY)
+                    .isSuccess(true)
+                    .timeStamp(LocalDateTime.now())
+                    .data(searchUserResponse)
+                    .build();
+            return ResponseEntity.ok(apiResponse);
+        }
+
+        //cache miss
         SearchUserResponse searchUserResponse = usersService.search(request, pageRequest);
+        String usersAsString = objectMapper.writeValueAsString(searchUserResponse);
+        CacheData saveCache = new CacheData(cacheKey, usersAsString);
+        cacheDataRepository.save(saveCache);
+
         APIResponse apiResponse = APIResponse.builder()
                 .message(INF_MSG_SUCCESSFULLY)
                 .isSuccess(true)
