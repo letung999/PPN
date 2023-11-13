@@ -42,6 +42,7 @@ public class CompanyProfileServiceImpl implements ICompanyProfileService {
             CompanyProfileDto companyProfileDto = new CompanyProfileDto();
             companyProfileDto.setCompanyId(companyProfile.getCompanyId());
             companyProfileDto.setCompanyIdName(companyProfile.getCompanyIdName());
+            companyProfileDto.setDateOfEstablishment(companyProfile.getDateOfEstablishment());
             companyProfileDto.setCompanyProfileMapping(companyProfile.getCompanyProfileMapping());
             return companyProfileDto;
         }).collect(Collectors.toList());
