@@ -292,4 +292,3 @@ jobs:
       <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/LogInsight.png?raw=true">
       <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/LogInsight.png?raw=true">
   </picture>
-
