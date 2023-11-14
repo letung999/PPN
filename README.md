@@ -287,6 +287,7 @@ jobs:
   </picture>
 
 * Step 4: When you can set up successfully, you can monitoring logs of application in cloud watch, if you want to look for a log, only click Logs insights tab and use the command line with filter by correlationId attached each request.
+
   <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/LogInsight.png?raw=true">
       <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/LogInsight.png?raw=true">
