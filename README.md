@@ -256,11 +256,12 @@ jobs:
 ## Set up logback.xml to send log from application to CloudWatch
 
 * Step 1: You will go ahead cloud watch of AWS and create a log group, each log group will have a lot of log streams corresponding to environments.
-  <picture>
+  
+<picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/CreateLogGroup_Streams.png?raw=true">
       <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/CreateLogGroup_Streams.png?raw=true">
       <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/CreateLogGroup_Streams.png?raw=true">
-  </picture>
+</picture>
 
 * Step 2: Create logback.xml file in resources folder simple like that:
 
@@ -288,8 +289,8 @@ jobs:
 
 * Step 4: When you can set up successfully, you can monitoring logs of application in cloud watch, if you want to look for a log, only click Logs insights tab and use the command line with filter by correlationId attached each request.
 
-  <picture>
+<picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/letung999/PPN/blob/dev/images/LogInsight.png?raw=true">
       <source media="(prefers-color-scheme: light)" srcset="https://github.com/letung999/PPN/blob/dev/images/LogInsight.png?raw=true">
       <img alt="The follow of system" src="https://github.com/letung999/PPN/blob/dev/images/LogInsight.png?raw=true">
-  </picture>
+</picture>
