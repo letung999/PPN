@@ -1,6 +1,7 @@
 package com.ppn.ppn.service;
 
 import com.ppn.ppn.dto.UsersDto;
+import com.ppn.ppn.entities.CacheData;
 import com.ppn.ppn.entities.Role;
 import com.ppn.ppn.entities.Users;
 import com.ppn.ppn.exception.ResourceDuplicateException;
@@ -8,6 +9,7 @@ import com.ppn.ppn.exception.ResourcesNotFoundException;
 import com.ppn.ppn.mapper.UsersMapper;
 import com.ppn.ppn.payload.SearchUserRequest;
 import com.ppn.ppn.payload.SearchUserResponse;
+import com.ppn.ppn.repository.CacheDataRepository;
 import com.ppn.ppn.repository.RoleRepository;
 import com.ppn.ppn.repository.UsersRepository;
 import com.ppn.ppn.service.constract.IUsersService;
@@ -39,6 +41,10 @@ public class UsersServiceImpl implements IUsersService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CacheDataRepository cacheDataRepository;
+
     private UsersMapper usersMapper = UsersMapper.INSTANCE;
 
     @Override
@@ -130,6 +136,35 @@ public class UsersServiceImpl implements IUsersService {
         return searchUserResponse;
     }
 
+    @Override
+    public UsersDto updateUsers(UsersDto usersDto) {
+        Optional<Users> users = userRepository.findById(usersDto.getUserId());
+        if (users.isEmpty()) {
+            throw new ResourcesNotFoundException("emails", usersDto.getEmail());
+        }
+
+        List<String> emails = userRepository.findAll().stream()
+                .filter(u -> !u.getEmail().equals(users.get().getEmail()))
+                .map(u -> {
+                    return u.getEmail();
+                }).collect(Collectors.toList());
+
+        if (emails.contains(usersDto.getEmail())) {
+            throw new ResourceDuplicateException("email", usersDto.getEmail());
+        }
+        Users dataSave = userRepository.save(usersMapper.usersDtoUsers(usersDto));
+
+        //deleted Cache for users:
+        List<CacheData> cacheDataList = (List<CacheData>) cacheDataRepository.findAll();
+        List<String> cacheKeyList = cacheDataList.stream()
+                .map(CacheData::getKey)
+                .filter(k -> k.substring(0, k.indexOf("-")).toLowerCase()
+                        .matches(".*" + "users" + ".*"))
+                .collect(Collectors.toList());
+        cacheDataRepository.deleteAllById(cacheKeyList);
+
+        return usersMapper.usersToUsersDto(dataSave);
+    }
 
     public Users checkLogin(Users user) {
         Users userCheck = null;
