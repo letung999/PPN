@@ -115,7 +115,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // handle exception occur when the call was transmitted successfully but Amazon S3 can't process request.
     @ExceptionHandler(AmazonServiceException.class)
-    public ResponseEntity<Object> handleAmazonServiceException(AmazonServiceException ex, WebRequest webRequest){
+    public ResponseEntity<Object> handleAmazonServiceException(AmazonServiceException ex, WebRequest webRequest) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .localDateTime(LocalDateTime.now())
                 .message(ex.getMessage())
@@ -127,7 +127,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     //handle exception occur when can't contact with Amazon S3
     @ExceptionHandler(SdkClientException.class)
-    public ResponseEntity<Object> handleSdkClientException(SdkClientException ex, WebRequest webRequest){
+    public ResponseEntity<Object> handleSdkClientException(SdkClientException ex, WebRequest webRequest) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .localDateTime(LocalDateTime.now())
                 .message(ex.getMessage())
@@ -135,6 +135,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .path(webRequest.getDescription(false))
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(CacheNotDeletedException.class)
+    public ResponseEntity<ErrorResponse> handleCacheNotDeletedException(CacheNotDeletedException ex, WebRequest webRequest) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .localDateTime(LocalDateTime.now())
+                .message(ex.getMessage())
+                .statusCode(HttpStatusCode.valueOf(400).toString())
+                .path(webRequest.getDescription(false))
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -15,5 +15,5 @@ public class MessageStatus {
     public static final String ERR_MSG_DOWN_LOAD_FILE = "Bucket is not exist or empty";
     public static final String ERR_MSG_UP_LOAD_FILE = "Invalid file. File extension or file name is not supported";
 
-
+    public static final String ERR_MSG_CAN_NOT_DELETE_CACHE = "Can not delete cache with prefix";
 }

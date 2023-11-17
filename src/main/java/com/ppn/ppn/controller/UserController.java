@@ -183,4 +183,17 @@ public class UserController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestBody @Valid UsersDto usersDto) {
+        UsersDto responseData = usersService.updateUsers(usersDto);
+        APIResponse apiResponse = APIResponse.builder()
+                .message(INF_MSG_SUCCESSFULLY)
+                .statusCode(200)
+                .isSuccess(true)
+                .timeStamp(LocalDateTime.now())
+                .data(responseData)
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
 }

@@ -15,4 +15,6 @@ public interface IUsersService {
     List<UsersDto> all(Pageable pageable);
 
     SearchUserResponse search(SearchUserRequest request, Pageable pageable);
+
+    UsersDto updateUsers(UsersDto usersDto);
 }
