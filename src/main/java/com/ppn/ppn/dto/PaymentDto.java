@@ -1,6 +1,8 @@
 package com.ppn.ppn.dto;
 
+import com.ppn.ppn.entities.Order;
 import com.ppn.ppn.entities.Users;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +17,9 @@ public class PaymentDto extends BaseEntityDto{
     private BigDecimal amount;
     private LocalDate dateOfPayment;
     private LocalTime timeOfPayment;
+    private String cardName;
+    private String cardNumber;
     private String paymentMethod;
     private Users users;
+    private Order order;
 }
