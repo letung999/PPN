@@ -30,8 +30,18 @@ public class Payment extends BaseEntity {
     @Column(name = "paymentMethod")
     private String paymentMethod;
 
+    @Column(name = "cardName")
+    private String cardName;
+
+    @Column(name = "cardNumber")
+    private String cardNumber;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "userId")
     private Users users;
+
+    @ManyToOne
+    @JoinColumn(name = "orderId")
+    private Order order;
 }
