@@ -4,6 +4,7 @@ package com.ppn.ppn.repository;
 import com.ppn.ppn.entities.CompanyProfile;
 import com.ppn.ppn.entities.CompanyProfileMapping;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -26,12 +27,15 @@ public class CompanyRepositoryTests {
     @Autowired
     private CompanyProfileMappingRepository companyProfileMappingRepository;
 
-    @Test
-    public void givenListCompanyProfile_whenGetListCompanyProfileByDate_thenListCompanyProfile() throws ParseException {
-        //setup
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date inputDate = simpleDateFormat.parse("2009-10-01");
-        Date inputDate1 = simpleDateFormat.parse("2004-10-01");
+    private SimpleDateFormat simpleDateFormat;
+    private Date inputDate;
+    private Date inputDate1;
+
+    @BeforeEach
+    public void setup() throws ParseException {
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        inputDate = simpleDateFormat.parse("2009-10-01");
+        inputDate1 = simpleDateFormat.parse("2004-10-01");
 
         CompanyProfile companyProfile = CompanyProfile.builder()
                 .companyIdName("001_shopBack")
@@ -46,7 +50,6 @@ public class CompanyRepositoryTests {
         CompanyProfile companyProfileSaved = companyRepository.save(companyProfile);
         CompanyProfile companyProfileSaved1 = companyRepository.save(companyProfile1);
 
-
         CompanyProfileMapping companyProfileMapping = CompanyProfileMapping.builder()
                 .companyId(companyProfileSaved.getCompanyId())
                 .parentCompanyId("001_shopBack")
@@ -60,6 +63,10 @@ public class CompanyRepositoryTests {
 
         companyProfileMappingRepository.save(companyProfileMapping);
         companyProfileMappingRepository.save(companyProfileMapping1);
+    }
+
+    @Test
+    public void givenListCompanyProfile_whenGetListCompanyProfileByDate_thenListCompanyProfile() throws ParseException {
 
         //action
         List<CompanyProfile> resultData = companyRepository.getListCompanyProfile(inputDate1);
@@ -71,38 +78,7 @@ public class CompanyRepositoryTests {
 
     @Test
     public void givenListCompanyProfileId_whenGetListCompanyProfileId_thenListCompanyProfileId() throws ParseException {
-        //setup
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date inputDate = simpleDateFormat.parse("2009-10-01");
-        Date inputDate1 = simpleDateFormat.parse("2004-10-01");
-
-        CompanyProfile companyProfile = CompanyProfile.builder()
-                .companyIdName("001_shopBack")
-                .dateOfEstablishment(inputDate)
-                .build();
-
-        CompanyProfile companyProfile1 = CompanyProfile.builder()
-                .companyIdName("002_ManHeim")
-                .dateOfEstablishment(inputDate1)
-                .build();
-
-        CompanyProfile companyProfileSaved = companyRepository.save(companyProfile);
-        CompanyProfile companyProfileSaved1 = companyRepository.save(companyProfile1);
-
-        CompanyProfileMapping companyProfileMapping = CompanyProfileMapping.builder()
-                .companyId(companyProfileSaved.getCompanyId())
-                .parentCompanyId("001_shopBack")
-                .companyProfile(companyProfileSaved)
-                .build();
-        CompanyProfileMapping companyProfileMapping1 = CompanyProfileMapping.builder()
-                .companyId(companyProfileSaved1.getCompanyId())
-                .parentCompanyId("002_ManHeim")
-                .companyProfile(companyProfileSaved1)
-                .build();
-
-        companyProfileMappingRepository.save(companyProfileMapping);
-        companyProfileMappingRepository.save(companyProfileMapping1);
-
+      
         PageRequest pageRequest = PageRequest.of(0, 2);
 
         //action
@@ -116,39 +92,7 @@ public class CompanyRepositoryTests {
 
     @Test
     public void givenListCompanyProfileIdIsEmpty_whenGetListCompanyProfileId_givenListCompanyProfileIdIsEmpty() throws ParseException {
-        //setup
-        //setup
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date inputDate = simpleDateFormat.parse("2009-10-01");
-        Date inputDate1 = simpleDateFormat.parse("2004-10-01");
-
-        CompanyProfile companyProfile = CompanyProfile.builder()
-                .companyIdName("001_shopBack")
-                .dateOfEstablishment(inputDate)
-                .build();
-
-        CompanyProfile companyProfile1 = CompanyProfile.builder()
-                .companyIdName("002_ManHeim")
-                .dateOfEstablishment(inputDate1)
-                .build();
-
-        CompanyProfile companyProfileSaved = companyRepository.save(companyProfile);
-        CompanyProfile companyProfileSaved1 = companyRepository.save(companyProfile1);
-
-        CompanyProfileMapping companyProfileMapping = CompanyProfileMapping.builder()
-                .companyId(companyProfileSaved.getCompanyId())
-                .parentCompanyId("001_shopBack")
-                .companyProfile(companyProfileSaved)
-                .build();
-        CompanyProfileMapping companyProfileMapping1 = CompanyProfileMapping.builder()
-                .companyId(companyProfileSaved1.getCompanyId())
-                .parentCompanyId("002_ManHeim")
-                .companyProfile(companyProfileSaved1)
-                .build();
-
-        companyProfileMappingRepository.save(companyProfileMapping);
-        companyProfileMappingRepository.save(companyProfileMapping1);
-
+      
         PageRequest pageRequest = PageRequest.of(1, 2);
 
         //action
