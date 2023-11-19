@@ -24,6 +24,6 @@ public interface CompanyRepository extends JpaRepository<CompanyProfile, Integer
             " from CompanyProfile c" +
             " inner join CompanyProfileMapping cp" +
             " on c.companyId = cp.companyId" +
-            " order by cp.ParentCompanyId, c.companyId")
+            " order by cp.parentCompanyId, c.companyId")
     Page<CompanyProfile> getListCompanyProfileId(Pageable pageable);
 }
