@@ -78,7 +78,7 @@ public class CompanyRepositoryTests {
 
     @Test
     public void givenListCompanyProfileId_whenGetListCompanyProfileId_thenListCompanyProfileId() throws ParseException {
-
+      
         PageRequest pageRequest = PageRequest.of(0, 2);
 
         //action
@@ -92,7 +92,7 @@ public class CompanyRepositoryTests {
 
     @Test
     public void givenListCompanyProfileIdIsEmpty_whenGetListCompanyProfileId_givenListCompanyProfileIdIsEmpty() throws ParseException {
-
+      
         PageRequest pageRequest = PageRequest.of(1, 2);
 
         //action
