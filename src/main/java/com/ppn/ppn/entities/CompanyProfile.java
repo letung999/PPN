@@ -1,10 +1,7 @@
 package com.ppn.ppn.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
@@ -14,6 +11,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CompanyProfile extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +24,6 @@ public class CompanyProfile extends BaseEntity{
     @Column(name = "dataOfEstablishment")
     private Date dateOfEstablishment;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "company_profile_mapping_Id")
+    @OneToOne(mappedBy = "companyProfile", cascade = CascadeType.ALL)
     private CompanyProfileMapping companyProfileMapping;
 }
