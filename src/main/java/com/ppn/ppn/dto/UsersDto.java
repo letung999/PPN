@@ -4,14 +4,16 @@ import com.ppn.ppn.entities.Car;
 import com.ppn.ppn.entities.Payment;
 import com.ppn.ppn.entities.Role;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsersDto extends BaseEntityDto {
     private Integer userId;
 
