@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static com.ppn.ppn.constant.ApprovalStatus.ACTIVE;
 import static com.ppn.ppn.constant.ApprovalStatus.PENDING;
@@ -76,7 +76,7 @@ public class UsersServiceTests {
     public void givenUsersObject_whenCreateUsers_thenUsersObject() {
 
         BDDMockito.given(usersRepository.findByEmail(usersDto.getEmail()))
-                .willReturn(Optional.of(users));
+                .willReturn(Optional.empty());
         //action
         BDDMockito.given(roleRepository.findByRoleName(VIEWER))
                 .willReturn(Optional.of(role));
@@ -149,6 +149,24 @@ public class UsersServiceTests {
         BDDMockito.verify(usersRepository, BDDMockito.never()).save(any(Users.class));
     }
 
+    @Test
+    public void givenUsersList_whenGetAll_thenUsersList() {
+        //setup
+        Page<Users> usersPage = BDDMockito.mock(Page.class);
+
+        Mockito.doReturn(getMockListUsers())
+                .when(usersPage).getContent();
+
+        BDDMockito.given(usersRepository.findAll(any(Pageable.class)))
+                .willReturn(usersPage);
+
+        //action
+        List<UsersDto> usersDtoList = usersService.all(PageRequest.of(0, 1));
+
+        //output
+        Assertions.assertThat(usersDtoList).isNotNull();
+    }
+
     //private methods
     private String randomString(int length) {
         String data = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -161,5 +179,37 @@ public class UsersServiceTests {
             resultData.append(data.charAt(index));
         }
         return resultData.toString();
+    }
+
+    private List<Users> getMockListUsers() {
+        return List.of(
+                Users.builder()
+                        .userId(1)
+                        .email("a@gmail.com")
+                        .firstName("tung")
+                        .password(passwordEncoder.encode("123456"))
+                        .phoneNumber("0338257409")
+                        .status(String.valueOf(PENDING))
+                        .roles(roles)
+                        .build(),
+                Users.builder()
+                        .userId(2)
+                        .email("b@gmail.com")
+                        .firstName("tung")
+                        .password(passwordEncoder.encode("123456"))
+                        .phoneNumber("0338257409")
+                        .status(String.valueOf(PENDING))
+                        .roles(roles)
+                        .build(),
+                Users.builder()
+                        .userId(3)
+                        .email("c@gmail.com")
+                        .firstName("tung")
+                        .password(passwordEncoder.encode("123456"))
+                        .phoneNumber("0338257409")
+                        .status(String.valueOf(PENDING))
+                        .roles(roles)
+                        .build()
+        );
     }
 }
